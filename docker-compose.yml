@@ -1,0 +1,36 @@
+services:
+
+  book-postgres:
+    image: postgres:16
+    container_name: book-postgres-compose
+
+    environment:
+      POSTGRES_DB: bookdb
+      POSTGRES_USER: bookuser
+      POSTGRES_PASSWORD: bookpassword
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - book-postgres-data:/var/lib/postgresql/data
+
+  book-service:
+    image: book-service:1.0
+    container_name: book-service-compose
+
+    ports:
+      - "8080:8080"
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://book-postgres:5432/bookdb
+      SPRING_DATASOURCE_USERNAME: bookuser
+      SPRING_DATASOURCE_PASSWORD: bookpassword
+
+    depends_on:
+      - book-postgres
+
+
+volumes:
+  book-postgres-data:
+    external: true
